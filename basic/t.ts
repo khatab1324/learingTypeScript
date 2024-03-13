@@ -1,0 +1,1 @@
+const obg = { id: 12 } as object
