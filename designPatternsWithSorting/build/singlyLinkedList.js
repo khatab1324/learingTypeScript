@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SinglyLinkedList = void 0;
-const index_1 = require("./index");
+const sortable_1 = require("./sortable");
 class LNode {
     constructor(value) {
         this.value = value;
         this.next = null;
     }
 }
-class SinglyLinkedList extends index_1.Sorter {
+class SinglyLinkedList extends sortable_1.Sorter {
     constructor() {
         super();
         this.head = null;

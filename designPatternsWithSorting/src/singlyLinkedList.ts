@@ -1,4 +1,4 @@
-import { Sorter } from "./index";
+import { Sorter } from "./sortable";
 
 class LNode {
   value: number;

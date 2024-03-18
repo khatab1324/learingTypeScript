@@ -1,4 +1,4 @@
-import { Sorter } from "./index";
+import { Sorter } from "./sortable";
 
 export class CharectorCollection extends Sorter {
   arrString: string[];

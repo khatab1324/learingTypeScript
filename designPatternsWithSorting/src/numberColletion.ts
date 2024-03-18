@@ -1,4 +1,4 @@
-import { Sorter } from "./index";
+import { Sorter } from "./sortable";
 
 export class NumberCollection extends Sorter {
   constructor(public data: number[]) {
