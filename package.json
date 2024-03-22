@@ -12,6 +12,7 @@
   "dependencies": {
     "@faker-js/faker": "^7.6.0",
     "@types/google.maps": "^3.55.4",
+    "@types/node": "^20.11.28",
     "concurrently": "^8.2.2"
   }
 }
