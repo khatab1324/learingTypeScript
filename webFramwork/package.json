@@ -1,0 +1,20 @@
+{
+  "name": "webframwork",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:parcel": "npx parcel index.html",
+    "start:json": "npx json-server -w db.json",
+    "start": "concurrently \"npm run start:parcel\" \"npm run start:json\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "assert": "^2.1.0",
+    "buffer": "^6.0.3",
+    "console-browserify": "^1.2.0",
+    "util": "^0.12.5"
+  }
+}

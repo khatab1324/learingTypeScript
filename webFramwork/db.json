@@ -1,0 +1,20 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "khattab",
+      "aga": 19,
+      "city": "Amman"
+    },
+    {
+      "name": "meme",
+      "age": 19,
+      "id": 2
+    },
+    {
+      "name": "meme",
+      "age": 19,
+      "id": 3
+    }
+  ]
+}
