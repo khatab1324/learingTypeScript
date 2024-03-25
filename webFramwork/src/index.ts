@@ -1,22 +1,17 @@
 import { User } from "./model/User";
 import { UsreApi } from "./model/UserApi";
 
-const newUser = new User({ name: "meme", age: 19 });
+const newUser = new User({ name: "sosom", age: 21 });
 
-// console.log(newUser.get("name"));
-// newUser.set({ name: "moo", age: 10 });
-// console.log(newUser.get("name"));
-// newUser.on("click", () => {
-//   console.log("");
-// });
-// console.log(newUser.trigger("click"));
 // newUser.fetch();
 // setTimeout(() => {
-//   //   console.log(newUser);
-// }, 3000);
-// console.log(newUser);
-newUser.save();
+//   console.log(newUser.get("name"));
+// }, 1000);
+// console.log(newUser.get("name"));
 
-// const userApi = new UsreApi("http://localhost:3000");
-// userApi.fetchUsername("khattab");
-// console.log(userApi);
+const userApi = new UsreApi("http://localhost:3000");
+userApi.save(newUser);
+(async () => {
+  await userApi.fetchAll();
+  console.log(userApi.userData); 
+})();

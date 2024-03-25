@@ -585,69 +585,56 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 
 },{}],"h7u1C":[function(require,module,exports) {
 var _user = require("./model/User");
+var _userApi = require("./model/UserApi");
 const newUser = new (0, _user.User)({
-    name: "meme",
-    age: 19
+    name: "sosom",
+    age: 21
 });
-// console.log(newUser.get("name"));
-// newUser.set({ name: "moo", age: 10 });
-// console.log(newUser.get("name"));
-// newUser.on("click", () => {
-//   console.log("");
-// });
-// console.log(newUser.trigger("click"));
 // newUser.fetch();
 // setTimeout(() => {
-//   //   console.log(newUser);
-// }, 3000);
-// console.log(newUser);
-newUser.save(); // const userApi = new UsreApi("http://localhost:3000");
- // userApi.fetchUsername("khattab");
- // console.log(userApi);
+//   console.log(newUser.get("name"));
+// }, 1000);
+// console.log(newUser.get("name"));
+const userApi = new (0, _userApi.UsreApi)("http://localhost:3000");
+userApi.save(newUser);
+(async ()=>{
+    await userApi.fetchAll();
+    console.log(userApi.userData);
+})();
 
-},{"./model/User":"eQi30"}],"eQi30":[function(require,module,exports) {
+},{"./model/UserApi":"3A6LY","./model/User":"eQi30"}],"3A6LY":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "User", ()=>User);
+parcelHelpers.export(exports, "UsreApi", ()=>UsreApi);
 var _axios = require("axios");
 var _axiosDefault = parcelHelpers.interopDefault(_axios);
-class User {
-    //i put [] to let js know this is key
-    constructor(data){
-        this.data = data;
-        this.events = {};
+class UsreApi {
+    constructor(url){
+        this.url = url;
+        this.userData = {};
     }
-    get(username) {
-        return this.data[username];
-    }
-    set(updateData) {
-        // this.data = updateData;//search can we do this
-        Object.assign(this.data, updateData);
-    }
-    on(eventName, callback) {
-        //what we looking is on will be and object that will have key and the value is callback function like this
-        //events:{change:[()=>{do somthing},()=>{do somthing else}],hover:[],move:[()=>{do somthing}]}
-        //the [] we have callback function and we will use them
-        let handleEvent = this.events[eventName] || [];
-        handleEvent.push(callback);
-        this.events[eventName] = handleEvent;
-    }
-    trigger(eventName) {
-        let handler = this.events[eventName];
-        if (!handler) return;
-        handler.forEach((callback)=>{
-            callback();
+    async fetchUsername(username) {
+        const users = await (0, _axiosDefault.default).get(this.url.concat(`/users`)).then((response)=>{
+            return response.data;
         });
-    }
-    async fetch() {
-        await (0, _axiosDefault.default).get(`http://localhost:3000/users/${this.get("id")}`).then((response)=>{
-            this.set(response.data);
+        const user = users.filter((user)=>{
+            if (user.name === username) return user;
         });
+        if (user) {
+            this.userData = user[0];
+            return user[0];
+        }
+        return "user not found";
     }
-    save() {
-        const id = this.get("id");
-        if (id) (0, _axiosDefault.default).put(`http://localhost:3000/users/${id}`, this.data);
-        else (0, _axiosDefault.default).post("http://localhost:3000/users/", this.data);
+    async fetchAll() {
+        const x = await (0, _axiosDefault.default).get(this.url.concat(`/users`));
+        Object.assign(this.userData, x.data);
+    }
+    get() {
+        return this.userData;
+    }
+    save(userData) {
+        (0, _axiosDefault.default).post(this.url.concat(`/users`), userData.getCurrentData());
     }
 }
 
@@ -5058,6 +5045,38 @@ Object.entries(HttpStatusCode).forEach(([key, value])=>{
 });
 exports.default = HttpStatusCode;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"6TEYZ"}]},["8xibI","h7u1C"], "h7u1C", "parcelRequirefb56")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"6TEYZ"}],"eQi30":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "User", ()=>User);
+var _axios = require("axios");
+var _axiosDefault = parcelHelpers.interopDefault(_axios);
+class User {
+    constructor(data){
+        this.data = data;
+    }
+    get(username) {
+        return this.data[username];
+    }
+    set(updateData) {
+        // this.data = updateData;//search can we do this
+        Object.assign(this.data, updateData);
+    }
+    getCurrentData() {
+        return this.data;
+    }
+    async fetch() {
+        await (0, _axiosDefault.default).get(`http://localhost:3000/users/${this.get("id")}`).then((response)=>{
+            this.set(response.data);
+        });
+    }
+    save() {
+        const id = this.get("id");
+        if (id) (0, _axiosDefault.default).put(`http://localhost:3000/users/${id}`, this.data);
+        else (0, _axiosDefault.default).post("http://localhost:3000/users/", this.data);
+    }
+}
+
+},{"axios":"lgmRm","@parcel/transformer-js/src/esmodule-helpers.js":"6TEYZ"}]},["8xibI","h7u1C"], "h7u1C", "parcelRequirefb56")
 
 //# sourceMappingURL=index.b71e74eb.js.map

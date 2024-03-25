@@ -1,9 +1,9 @@
 import axios, { AxiosResponse } from "axios";
-import { UserProp } from "./User";
-export class UsreApi {
-  public userData: UserProp;
-  constructor(private url: string) {}
+import { User, UserProp } from "./User";
 
+export class UsreApi {
+  public userData: UserProp = {};
+  constructor(private url: string) {}
   async fetchUsername(username: string) {
     const users: UserProp[] = await axios
       .get(this.url.concat(`/users`))
@@ -21,10 +21,13 @@ export class UsreApi {
   }
 
   async fetchAll() {
-    const users = await axios.get(this.url.concat(`/users`));
-    return users;
+    const x = await axios.get(this.url.concat(`/users`));
+    Object.assign(this.userData, x.data);
   }
-  save(userData: UserProp) {
-    axios.post(this.url).then((response: AxiosResponse) => {});
+  get() {
+    return this.userData;
+  }
+  save(userData: User) {
+    axios.post(this.url.concat(`/users`), userData.getCurrentData());
   }
 }
