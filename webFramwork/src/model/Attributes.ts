@@ -16,7 +16,7 @@ export class Attributes<T extends object> {
     // this.data = updateData;//search can we do this
     Object.assign(this.data, updateData);
   }
-  getAll(){
-    return this.data
+  getAll() {
+    return this.data;
   }
 }

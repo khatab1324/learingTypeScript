@@ -8,7 +8,7 @@ let StringArray :string []=["hi","1"]
 // literal obj
 let obj :{x:number,y:number}={
     x:10 ,
-    y:20
+    y:20,
 }
 
 // function
