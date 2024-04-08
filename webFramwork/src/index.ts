@@ -1,21 +1,12 @@
 import { User, UserProp } from "./model/User";
+import { UserForm } from "./views/UserFrom";
 export const url = "http://localhost:3000/users";
 
-// const user = User.buildUser({ name: "user", age: 10 });
-// user.on("save", () => {
-//   console.log("user are saved");
-// });
+const user = User.buildUser({ name: "dark souls", age: 2009 });
+const root = document.getElementById("root");
 
-// user.on("err", () => {
-//   console.log("error");
-// });
-// user.get("id");
-// user.save();
-// user.set({ name: "jiji", age: 20, city: "amman" });
-// user.save();
-
-const colloction = User.buildUserCollection();
-colloction.fetchAll();
-colloction.on("change", () => {
-  console.log(colloction);
-});
+if (root) {
+  const userForm = new UserForm(root, user).render();
+} else {
+  throw new Error("root not define");
+}

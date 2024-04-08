@@ -584,57 +584,274 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 }
 
 },{}],"h7u1C":[function(require,module,exports) {
-var _user = require("./model/User");
-var _userApi = require("./model/UserApi");
-const newUser = new (0, _user.User)({
-    name: "sosom",
-    age: 21
-});
-// newUser.fetch();
-// setTimeout(() => {
-//   console.log(newUser.get("name"));
-// }, 1000);
-// console.log(newUser.get("name"));
-const userApi = new (0, _userApi.UsreApi)("http://localhost:3000");
-userApi.save(newUser);
-(async ()=>{
-    await userApi.fetchAll();
-    console.log(userApi.userData);
-})();
-
-},{"./model/UserApi":"3A6LY","./model/User":"eQi30"}],"3A6LY":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "UsreApi", ()=>UsreApi);
+parcelHelpers.export(exports, "url", ()=>url);
+var _user = require("./model/User");
+var _userFrom = require("./views/UserFrom");
+const url = "http://localhost:3000/users";
+const user = (0, _user.User).buildUser({
+    name: "dark souls",
+    age: 2009
+});
+const root = document.getElementById("root");
+if (root) {
+    const userForm = new (0, _userFrom.UserForm)(root, user).render();
+} else throw new Error("root not define");
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"6TEYZ","./views/UserFrom":"67Qvd","./model/User":"eQi30","./views/UserFormMyWay":"aSvl5"}],"6TEYZ":[function(require,module,exports) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, "__esModule", {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === "default" || key === "__esModule" || Object.prototype.hasOwnProperty.call(dest, key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
+
+},{}],"67Qvd":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "UserForm", ()=>UserForm);
+class UserForm {
+    constructor(parent, model){
+        this.parent = parent;
+        this.model = model;
+        this.onSetRandomAge = ()=>{
+            this.model.setRandomAge();
+        };
+        this.onSetName = ()=>{
+            const input = this.parent.querySelector("input");
+            if (input && input.value !== "") this.model.setName(input.value);
+        };
+        this.model.on("change", ()=>{
+            this.render();
+        });
+    }
+    eventsMap() {
+        return {
+            "click:set_age": this.onSetRandomAge,
+            "click:set_name": this.onSetName
+        };
+    }
+    template() {
+        return `
+    <div>
+    <h1 >hello there</h1>
+    <div>username : ${this.model.get("name")}</div>
+    <div>user age : ${this.model.get("age")}</div>
+    <input/>
+    <button id="set_age">set random age</button>
+    <button id="set_name">change name</button>
+    </div>
+    `;
+    }
+    bindEvents(fragment) {
+        const eventsMap = this.eventsMap();
+        for(let eventKey in eventsMap){
+            const [eventName, idName] = eventKey.split(":");
+            console.log(idName);
+            fragment?.getElementById(idName)?.addEventListener(eventName, eventsMap[eventKey]);
+        }
+    }
+    render() {
+        this.parent.innerHTML = "";
+        const templateElement = document.createElement("template");
+        templateElement.innerHTML = this.template();
+        this.bindEvents(templateElement.content);
+        this.parent.append(templateElement.content);
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"6TEYZ"}],"eQi30":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "User", ()=>User);
+var _model = require("./Model");
+var _attributes = require("./Attributes");
+var _eventing = require("./Eventing");
+var _syncApi = require("./SyncApi");
+var _ = require("..");
+var _collection = require("./Collection");
+class User extends (0, _model.Model) {
+    static buildUser(attrs) {
+        return new User(new (0, _attributes.Attributes)(attrs), new (0, _eventing.Eventing)(), new (0, _syncApi.SyncApi)((0, _.url)));
+    }
+    static buildUserCollection() {
+        return new (0, _collection.Collection)(User.buildUser);
+    }
+    setRandomAge() {
+        const age = Math.round(Math.random() * 100);
+        this.set({
+            age
+        });
+    }
+    setName(name) {
+        this.set({
+            name
+        });
+    }
+}
+
+},{"./Model":"gFIRl","./Attributes":"jCihl","./Eventing":"dpV5J","./SyncApi":"8TdqB","..":"h7u1C","./Collection":"1etZn","@parcel/transformer-js/src/esmodule-helpers.js":"6TEYZ"}],"gFIRl":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Model", ()=>Model);
+class Model {
+    constructor(attributes, events, sync){
+        this.attributes = attributes;
+        this.events = events;
+        this.sync = sync;
+    }
+    //steven use this hard code i say he did't see eventing will change
+    //but i don't know i am not comfortible to use hard code
+    //steven give me 3 option 1) to pass the event in constructor beside data 2)the same thing but make constructor just for proprity like classes 3)hard code
+    //TODO: think in way that you will not use hard coding and will not take lines of code to config it with every user
+    //TODO: stephon have problem that when he refercne to this.events.get in the get() that in attributes it will swap this with user but for me
+    // * i find the answer becuase we have the same names like events it the same in attributes and user that mean it will use the same storge but try use another neme like eventesssss it will cause error
+    //it work fine that in lectuer 179 and he but arrow function
+    get on() {
+        return this.events.on;
+    //* here i call the refrence not the function
+    }
+    get trigger() {
+        return this.events.trigger;
+    }
+    get get() {
+        return this.attributes.get; //this just the refrence
+    }
+    set(updateData) {
+        this.attributes.set(updateData);
+        this.events.trigger("change");
+    }
+    fetch() {
+        const id = this.get("id");
+        if (typeof id !== "number") throw new Error("Cannot fetch without an id");
+        this.sync.fetch(id).then((response)=>{
+            this.set(response.data);
+        });
+    }
+    save() {
+        this.sync.save(this.attributes.getAll()).then((response)=>{
+            this.trigger("save");
+        }).catch((err)=>{
+            this.trigger("err");
+        });
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"6TEYZ"}],"jCihl":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Attributes", ()=>Attributes);
+class Attributes {
+    constructor(data){
+        this.data = data;
+        this.get = (key)=>{
+            //this expression is a type guard that checks if the key is a key of the data object
+            // if it is not, it will throw an error
+            //that mean it work like this : get('name') will return string and get('age') will return number
+            //K extends keyof T mean K can be any key of T
+            //T[K] mean the value of key K in T
+            //if we have T = {name:string,age:number} and K = 'name' then T[K] = string
+            // *console.log(this);//we use array to make (this) refer to Attriputes
+            //that mean if we use refrence to get we will get the refrence of the function not the function itself
+            return this.data[key];
+        };
+    }
+    set(updateData) {
+        // this.data = updateData;//search can we do this
+        Object.assign(this.data, updateData);
+    }
+    getAll() {
+        return this.data;
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"6TEYZ"}],"dpV5J":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Eventing", ()=>Eventing);
+class Eventing {
+    constructor(){
+        this.events = {};
+        //i put [] to let js know this is key
+        this.on = (eventName, callback)=>{
+            //what we looking is on will be and object that will have key and the value is callback function like this
+            //events:{change:[()=>{do somthing},()=>{do somthing else}],hover:[],move:[()=>{do somthing}]}
+            //the [] we have callback function and we will use them
+            let handleEvent = this.events[eventName] || [];
+            handleEvent.push(callback);
+            this.events[eventName] = handleEvent;
+        };
+        this.trigger = (eventName)=>{
+            let handler = this.events[eventName];
+            if (!handler) return;
+            handler.forEach((callback)=>{
+                callback();
+            });
+        };
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"6TEYZ"}],"8TdqB":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "SyncApi", ()=>SyncApi);
 var _axios = require("axios");
 var _axiosDefault = parcelHelpers.interopDefault(_axios);
-class UsreApi {
+class SyncApi {
+    // public data: HasId = { id: 1 };
     constructor(url){
         this.url = url;
-        this.userData = {};
     }
-    async fetchUsername(username) {
-        const users = await (0, _axiosDefault.default).get(this.url.concat(`/users`)).then((response)=>{
-            return response.data;
-        });
-        const user = users.filter((user)=>{
-            if (user.name === username) return user;
-        });
-        if (user) {
-            this.userData = user[0];
-            return user[0];
-        }
-        return "user not found";
-    }
+    // async fetchUsername(username: string) {
+    //   const users: T[] = await axios
+    //     .get(this.url)
+    //     .then((response: AxiosResponse) => {
+    //       return response.data;
+    //     });
+    //   const user = users.filter((user) => {
+    //     if (user.name === username) return user;
+    //   });
+    //   if (user) {
+    //     this.data = user[0];
+    //     return user[0];
+    //   }
+    //   return "user not found";
+    // }
     async fetchAll() {
-        const x = await (0, _axiosDefault.default).get(this.url.concat(`/users`));
-        Object.assign(this.userData, x.data);
+        return (0, _axiosDefault.default).get(this.url);
     }
-    get() {
-        return this.userData;
+    async fetch(id) {
+        return (0, _axiosDefault.default).get(`${this.url}/${id}`);
     }
-    save(userData) {
-        (0, _axiosDefault.default).post(this.url.concat(`/users`), userData.getCurrentData());
+    save(data) {
+        const id = data.id;
+        //the type of id is number | undefined that's because we run tsc --init and in that file there is "strict": true
+        //but we will not use it so we will remove it
+        if (!id) return (0, _axiosDefault.default).post(this.url, data);
+        else return (0, _axiosDefault.default).put(`${this.url}/${id}`, data);
     }
 }
 
@@ -1320,37 +1537,7 @@ function bind(fn, thisArg) {
     };
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"6TEYZ"}],"6TEYZ":[function(require,module,exports) {
-exports.interopDefault = function(a) {
-    return a && a.__esModule ? a : {
-        default: a
-    };
-};
-exports.defineInteropFlag = function(a) {
-    Object.defineProperty(a, "__esModule", {
-        value: true
-    });
-};
-exports.exportAll = function(source, dest) {
-    Object.keys(source).forEach(function(key) {
-        if (key === "default" || key === "__esModule" || Object.prototype.hasOwnProperty.call(dest, key)) return;
-        Object.defineProperty(dest, key, {
-            enumerable: true,
-            get: function() {
-                return source[key];
-            }
-        });
-    });
-    return dest;
-};
-exports.export = function(dest, destName, get) {
-    Object.defineProperty(dest, destName, {
-        enumerable: true,
-        get: get
-    });
-};
-
-},{}],"6m2Mz":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"6TEYZ"}],"6m2Mz":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _utilsJs = require("./../utils.js");
@@ -5045,38 +5232,39 @@ Object.entries(HttpStatusCode).forEach(([key, value])=>{
 });
 exports.default = HttpStatusCode;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"6TEYZ"}],"eQi30":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"6TEYZ"}],"1etZn":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "User", ()=>User);
+parcelHelpers.export(exports, "Collection", ()=>Collection);
 var _axios = require("axios");
 var _axiosDefault = parcelHelpers.interopDefault(_axios);
-class User {
-    constructor(data){
-        this.data = data;
+var _eventing = require("./Eventing");
+var _ = require("..");
+class Collection {
+    constructor(BuildingElement){
+        this.BuildingElement = BuildingElement;
+        this.modles = [];
+        this.events = new (0, _eventing.Eventing)();
     }
-    get(username) {
-        return this.data[username];
+    get trigger() {
+        return this.events.trigger;
     }
-    set(updateData) {
-        // this.data = updateData;//search can we do this
-        Object.assign(this.data, updateData);
+    get on() {
+        return this.events.on;
     }
-    getCurrentData() {
-        return this.data;
-    }
-    async fetch() {
-        await (0, _axiosDefault.default).get(`http://localhost:3000/users/${this.get("id")}`).then((response)=>{
-            this.set(response.data);
+    fetchAll() {
+        (0, _axiosDefault.default).get((0, _.url)).then((response)=>{
+            response.data.forEach((value)=>{
+                const element = this.BuildingElement(value);
+                this.modles.push(element);
+            });
+            this.trigger("change");
         });
-    }
-    save() {
-        const id = this.get("id");
-        if (id) (0, _axiosDefault.default).put(`http://localhost:3000/users/${id}`, this.data);
-        else (0, _axiosDefault.default).post("http://localhost:3000/users/", this.data);
     }
 }
 
-},{"axios":"lgmRm","@parcel/transformer-js/src/esmodule-helpers.js":"6TEYZ"}]},["8xibI","h7u1C"], "h7u1C", "parcelRequirefb56")
+},{"axios":"lgmRm","./Eventing":"dpV5J","..":"h7u1C","@parcel/transformer-js/src/esmodule-helpers.js":"6TEYZ"}],"aSvl5":[function(require,module,exports) {
+
+},{}]},["8xibI","h7u1C"], "h7u1C", "parcelRequirefb56")
 
 //# sourceMappingURL=index.b71e74eb.js.map
