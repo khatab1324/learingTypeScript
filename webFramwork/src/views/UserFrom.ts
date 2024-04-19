@@ -1,15 +1,12 @@
-import { User } from "../model/User";
+import { User, UserProp } from "../model/User";
+import { View } from "./View";
 
-export class UserForm {
-  constructor(public parent: Element, public model: User) {
-    this.model.on("change", () => {
-      this.render();
-    });
-  }
+export class UserForm extends View<User, UserProp> {
   eventsMap(): { [key: string]: () => void } {
     return {
       "click:set_age": this.onSetRandomAge,
       "click:set_name": this.onSetName,
+      "click:save_user": this.onSaveUser,
     };
   }
 
@@ -22,35 +19,18 @@ export class UserForm {
       this.model.setName(input.value);
     }
   };
+  onSaveUser = (): void => {
+    this.model.save();
+  };
 
   template(): string {
     return `
     <div>
-    <h1 >hello there</h1>
-    <div>username : ${this.model.get("name")}</div>
-    <div>user age : ${this.model.get("age")}</div>
-    <input/>
+    <input placeholder="${this.model.get("name")}"/>
     <button id="set_age">set random age</button>
     <button id="set_name">change name</button>
+    <button id="save_user">save user</button>
     </div>
     `;
-  }
-  bindEvents(fragment: DocumentFragment): void {
-    const eventsMap = this.eventsMap();
-    for (let eventKey in eventsMap) {
-      const [eventName, idName] = eventKey.split(":");
-      console.log(idName);
-
-      fragment
-        ?.getElementById(idName)
-        ?.addEventListener(eventName, eventsMap[eventKey]);
-    }
-  }
-  render() {
-    this.parent.innerHTML = "";
-    const templateElement = document.createElement("template");
-    templateElement.innerHTML = this.template();
-    this.bindEvents(templateElement.content);
-    this.parent.append(templateElement.content);
   }
 }
