@@ -1,11 +1,11 @@
-import axios, { AxiosPromise, AxiosResponse } from "axios";
+import axios, {  AxiosResponse } from "axios";
 import { Eventing } from "./Eventing";
 import { url } from "..";
 
 export class Collection<T, Dprop> {
   modles: T[] = [];
   events: Eventing = new Eventing();
-  constructor(public BuildingElement) {}
+  constructor(public BuildingElement:any) {}
   get trigger() {
     return this.events.trigger;
   }

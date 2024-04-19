@@ -5,19 +5,19 @@ import { AxiosPromise, AxiosResponse } from "axios";
 type Callback = () => void;
 interface ModelAttributes<T> {
   get<K extends keyof T>(key: K): T[K];
-  set(updateData: T);
+  set(updateData: T):void;
   getAll(): T;
 }
 interface Events {
-  on(eventName: string, callback: Callback);
-  trigger(eventName: string);
+  on(eventName: string, callback: Callback):void;
+  trigger(eventName: string):void;
 }
 interface Sync<T> {
   fetch(id: number): AxiosPromise;
   save(data: T): AxiosPromise;
   fetchAll(): AxiosPromise;
 }
-interface HasId {
+export interface HasId {
   id?: number;
 }
 
