@@ -34,9 +34,9 @@ export abstract class View<T extends Model<K>, K extends HasId> {
     }
   }
   mapElementArea(fragment: DocumentFragment): void {
-    const regionsMap = this.elementAreaMap();
-    for (let key in regionsMap) {
-      const selector = regionsMap[key];
+    const elementAreaMap = this.elementAreaMap();
+    for (let key in elementAreaMap) {
+      const selector = elementAreaMap[key];
       const element = fragment.getElementById(selector);
       if (element) {
         this.elementArea[key] = element;

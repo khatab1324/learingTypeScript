@@ -1,16 +1,13 @@
-import { Eventing } from "./Eventing";
-import { SyncApi } from "./SyncApi";
-import { Attributes } from "./Attributes";
 import { AxiosPromise, AxiosResponse } from "axios";
 type Callback = () => void;
 interface ModelAttributes<T> {
   get<K extends keyof T>(key: K): T[K];
-  set(updateData: T):void;
+  set(updateData: T): void;
   getAll(): T;
 }
 interface Events {
-  on(eventName: string, callback: Callback):void;
-  trigger(eventName: string):void;
+  on(eventName: string, callback: Callback): void;
+  trigger(eventName: string): void;
 }
 interface Sync<T> {
   fetch(id: number): AxiosPromise;
@@ -57,6 +54,12 @@ export class Model<T extends HasId> {
 
     this.sync.fetch(id).then((response: AxiosResponse): void => {
       this.set(response.data);
+    });
+  }
+  fetchAll(): any {
+    this.sync.fetchAll().then((response: AxiosResponse): void => {
+      // this.set(response.data);
+      console.log(response.data);
     });
   }
   save() {

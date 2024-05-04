@@ -4,8 +4,6 @@ import { Attributes } from "./Attributes";
 import { Eventing } from "./Eventing";
 import { SyncApi } from "./SyncApi";
 import { url } from "..";
-import { Collection } from "./Collection";
-
 export interface UserProp {
   id?: number;
   name?: string;
@@ -19,9 +17,6 @@ export class User extends Model<UserProp> {
       new Eventing(),
       new SyncApi<UserProp>(url)
     );
-  }
-  static buildUserCollection(): Collection<User, UserProp> {
-    return new Collection<User, UserProp>(User.buildUser);
   }
   setRandomAge() {
     const age = Math.round(Math.random() * 100);
